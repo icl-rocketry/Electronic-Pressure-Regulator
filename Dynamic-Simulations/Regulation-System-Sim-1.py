@@ -16,11 +16,12 @@ rhost = Pst/(R_N2*Tst)
 
 V_1 = 2.5 #HP Tank volume [L]
 V_2 = 13 #Prop tank volume [L]
-A_3 = 30*1e-6 #Injector Orifice Area [m^2]
+A_3 = 20*1e-6 #Injector Orifice Area [m^2]
 Cd_3 = 0.7 #Injector Orifice Discharge Coefficient
 
-Kv_1_max = 11
-Opening_vs_norm_Kv = [[0,0.0322,0.0567,0.0967,0.1611,0.25,0.3833,0.64,0.86,1],[0,10,20,30,40,50,60,70,80,90]]
+Kv_1_max = 1.6
+#Opening_vs_norm_Kv = [[0,0.0322,0.0567,0.0967,0.1611,0.25,0.3833,0.64,0.86,1],[0,10,20,30,40,50,60,70,80,90]] taken from (scaled 8"): https://www.mydatabook.org/fluid-mechanics/flow-coefficient-opening-and-closure-curves-of-full-bore-ball-valves/
+Opening_vs_norm_Kv = [[0,0.0145,0.0290,0.0580,0.0870,0.1304,0.2174,0.3188,0.5507,0.7826,1],[0,13.5,18,27,36,45,54,63,72,81,90]] # taken from (scaled 1/2"): https://www.valvesonline.co.uk/technical-information/mars-v-sector-manual-control-ball-valve-series-88.pdf
 
 #-------------------------------------------------------
 #-------------- Initial Conditions ---------------------
@@ -138,7 +139,7 @@ z0 = [m_2_0, m_3_0, rho_1_0]
 
 
 # Define the time span for integration
-t_span = (0, 9)
+t_span = (0, 15)
 
 # Generate evaluation times
 t_eval = np.linspace(*t_span, 100)
