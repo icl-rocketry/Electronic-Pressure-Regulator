@@ -19,12 +19,15 @@ V_2 = 13 #Prop tank volume [L]
 A_3 = 30*1e-6 #Injector Orifice Area [m^2]
 Cd_3 = 0.7 #Injector Orifice Discharge Coefficient
 
+Kv_1_max = 11
+Opening_vs_norm_Kv = [[0,0.0322,0.0567,0.0967,0.1611,0.25,0.3833,0.64,0.86,1],[0,10,20,30,40,50,60,70,80,90]]
+
 #-------------------------------------------------------
 #-------------- Initial Conditions ---------------------
 #-------------------------------------------------------
 
 T_0_N2 = 300 #Initial temperature of nitrogen in the HP tank and ullage [K]
-P_1_0 = 250 #Initial pressure of nitrogen in the HP tank [bar]
+P_1_0 = 270 #Initial pressure of nitrogen in the HP tank [bar]
 P_2_0 = 40 #Initial pressure of nitrogen ullage in prop tank [bar]
 P_3_0 = 0 #Initial injector upstream pressure [bar]
 m_dot_N2_0 = 0 #Initial N2 mass flow rate [kg/s]
@@ -57,8 +60,8 @@ def K1_Flow_Rate(P_1, P_2, rho_1, rho_2, T, t):
     
     if K_v_controlled < 0:
         K_v_controlled = 0
-    #elif K_v_controlled > 0.75:
-    #    K_v_controlled = 0.75
+    elif K_v_controlled > Kv_1_max:
+        K_v_controlled = Kv_1_max
     
     K_v = np.interp(t, [0, 0.6, 0.8, 10], [0, 0, K_v_controlled, K_v_controlled]) # Define the Kv of the valve based on a predefined path
     #K_v = 1
@@ -117,9 +120,6 @@ def dae_system(t, z):
     solution = root(algebraic_equations, (1,1,1), args=(P_1, P_2, rho_1, rho_2, m_3, T, t), method='hybr', tol=1e-5)
     P_3, m_dot_N2, m_dot_L = solution.x
     
-    #print(P_3, m_dot_N2, m_dot_L)
-    #print(algebraic_equations((P_3, m_dot_N2, m_dot_L), P_1, P_2, rho_1, rho_2))
-    
     # Differential Equations
     m_dot_2 = m_dot_N2
     
@@ -160,27 +160,35 @@ for i in range(0,len(t_eval)):
     solution = root(algebraic_equations, (1,1,1), args=(P_1[i], P_2[i], rho_1[i], rho_2[i], m_3[i], T[i], t[i]), method='hybr', tol=1e-5)
     m_dot_N2[i], K_v_reg[i] = K1_Flow_Rate(P_1[i], P_2[i], rho_1[i], rho_2[i], T[i], t[i])
     P_3[i], m_dot_N2[i], m_dot_L[i] = solution.x
+    
+Opening = np.interp(K_v_reg, np.transpose(Opening_vs_norm_Kv[0])*Kv_1_max, np.transpose(Opening_vs_norm_Kv[1]))
 
 # Plot the results
 import matplotlib.pyplot as plt
 
 
 plt.plot(t,m_3, label='Prop Mass')
-#plt.plot(t,m_2, label='m_2')
-#plt.plot(t,m_1, label='m_1')
-#plt.plot(t,m_1+m_2, label='m_1+m_2')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Mass [kg]')
 plt.legend()
 plt.show()
 '''
 plt.plot(t,rho_1, label='rho_1')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Density [kg/m^3]')
 plt.legend()
 plt.show()
 '''
 plt.plot(t,T, label='Nitrogen Temp.')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Temperature [K]')
 plt.legend()
@@ -188,20 +196,48 @@ plt.show()
 
 
 plt.plot(t,m_dot_L, label='Prop Mass Flow')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Mass Flow Rate [kg/s]')
 plt.legend()
 plt.show()
 
 plt.plot(t,K_v_reg, label='Regulator Kv')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Kv [m^3/hr]')
+plt.legend()
+plt.show()
+
+plt.plot(np.transpose(Opening_vs_norm_Kv[0]), np.transpose(Opening_vs_norm_Kv[1]), label='Ball Valve')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
+plt.xlabel('Kv (normalised)')
+plt.ylabel('Opening Angle [deg]')
+plt.legend()
+plt.show()
+
+reg_label = 'Reg Valve, Kv = ' + str(Kv_1_max)
+plt.plot(t,Opening, label=reg_label)
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
+plt.xlabel('Time [s]')
+plt.ylabel('Opening Angle [deg]')
 plt.legend()
 plt.show()
 
 plt.plot(t,P_1*1e-5, label='HP N2 Tank')
 plt.plot(t,P_2*1e-5, label='Prop Tank')
 plt.plot(t,P_3*1e-5, label='Injector')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
 plt.xlabel('Time [s]')
 plt.ylabel('Pressure [bar]')
 plt.legend()
