@@ -16,12 +16,10 @@ rhost = Pst/(R_N2*Tst)
 
 V_1 = 2.5 #HP Tank volume [L]
 V_2 = 13 #Prop tank volume [L]
-A_3 = 20*1e-6 #Injector Orifice Area [m^2]
+A_3 = 45*1e-6 #Injector Orifice Area [m^2]
 Cd_3 = 0.7 #Injector Orifice Discharge Coefficient
 
-Kv_1_max = 1.6
-#Opening_vs_norm_Kv = [[0,0.0322,0.0567,0.0967,0.1611,0.25,0.3833,0.64,0.86,1],[0,10,20,30,40,50,60,70,80,90]] taken from (scaled 8"): https://www.mydatabook.org/fluid-mechanics/flow-coefficient-opening-and-closure-curves-of-full-bore-ball-valves/
-Opening_vs_norm_Kv = [[0,0.0145,0.0290,0.0580,0.0870,0.1304,0.2174,0.3188,0.5507,0.7826,1],[0,13.5,18,27,36,45,54,63,72,81,90]] # taken from (scaled 1/2"): https://www.valvesonline.co.uk/technical-information/mars-v-sector-manual-control-ball-valve-series-88.pdf
+Kv_1_max = 1.6 #Reg Valve Maximum Kv
 
 #-------------------------------------------------------
 #-------------- Initial Conditions ---------------------
@@ -34,6 +32,9 @@ P_3_0 = 0 #Initial injector upstream pressure [bar]
 m_dot_N2_0 = 0 #Initial N2 mass flow rate [kg/s]
 m_dot_L_0 = 0 #Initial Propellant mass flow rate [kg/s]
 m_3_0 = 11 #Initial mass of liquid propellant [kg]
+
+#Opening_vs_norm_Kv = [[0,0.0322,0.0567,0.0967,0.1611,0.25,0.3833,0.64,0.86,1],[0,10,20,30,40,50,60,70,80,90]] taken from (scaled 8"): https://www.mydatabook.org/fluid-mechanics/flow-coefficient-opening-and-closure-curves-of-full-bore-ball-valves/
+Opening_vs_norm_Kv = [[0,0.0145,0.0290,0.0580,0.0870,0.1304,0.2174,0.3188,0.5507,0.7826,1],[0,13.5,18,27,36,45,54,63,72,81,90]] # taken from (scaled 1/2"): https://www.valvesonline.co.uk/technical-information/mars-v-sector-manual-control-ball-valve-series-88.pdf
 
 #------------------------------------------------------
 #------------- Convert to SI units --------------------
@@ -139,7 +140,7 @@ z0 = [m_2_0, m_3_0, rho_1_0]
 
 
 # Define the time span for integration
-t_span = (0, 15)
+t_span = (0, 5)
 
 # Generate evaluation times
 t_eval = np.linspace(*t_span, 100)
@@ -197,6 +198,7 @@ plt.show()
 
 
 plt.plot(t,m_dot_L, label='Prop Mass Flow')
+plt.plot(t,m_dot_N2, label='N2 Mass Flow')
 plt.grid(which='major',axis='both',linewidth = 0.8)
 plt.minorticks_on()
 plt.grid(which='minor',axis='both',linewidth = 0.2)
@@ -234,6 +236,17 @@ plt.legend()
 plt.show()
 
 plt.plot(t,P_1*1e-5, label='HP N2 Tank')
+plt.plot(t,P_2*1e-5, label='Prop Tank')
+#plt.plot(t,P_3*1e-5, label='Injector')
+plt.grid(which='major',axis='both',linewidth = 0.8)
+plt.minorticks_on()
+plt.grid(which='minor',axis='both',linewidth = 0.2)
+plt.xlabel('Time [s]')
+plt.ylabel('Pressure [bar]')
+plt.legend()
+plt.show()
+
+#plt.plot(t,P_1*1e-5, label='HP N2 Tank')
 plt.plot(t,P_2*1e-5, label='Prop Tank')
 plt.plot(t,P_3*1e-5, label='Injector')
 plt.grid(which='major',axis='both',linewidth = 0.8)
