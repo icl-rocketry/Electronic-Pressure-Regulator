@@ -13,7 +13,7 @@ from CoolProp.CoolProp import PropsSI
 
 V_tank = 10 #Tank volume [L]
 Cd = 0.7 #Injector discharge coefficient
-A = 8e-6 #Injector area [m^2]
+A = 10e-6 #Injector area [m^2]
 P_2 = 101325 #Atmospheric pressure [Pa]
 
 
@@ -22,7 +22,7 @@ P_2 = 101325 #Atmospheric pressure [Pa]
 #-------------------------------------------------------
 
 T_0 = 295 #Initial N2O temperature [K]
-m_tot_0 = 7.5 #Initial N2O total mass [kg]
+m_tot_0 = 7 #Initial N2O total mass [kg]
 
 #------------------------------------------------------
 #------------- Convert to SI units --------------------

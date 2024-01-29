@@ -4,11 +4,11 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 from CoolProp.CoolProp import PropsSI
 
-m_dot = 0.05 #Gas mass flow rate [kg/s]
+m_dot = 0.2 #Gas mass flow rate [kg/s]
 P_1 = 40e5 #Gas Pressure [Pa]
 T_1 = 250 #Gas Temp [K]
 
-D = 4.2e-3 #Pipe Diameter [m]
+D = 7e-3 #Pipe Diameter [m]
 L = 0.3 #Pipe Length [m]
 k = 0.015e-3 #Pipe Roughness [m]
 
